@@ -39,8 +39,12 @@ class InvoiceData(BaseModel):
     invoice_date: str | None = None
     due_date: str | None = None
     currency: str | None = None
-    total_amount: float | None = None
+
     items: list[InvoiceItem]
+
+    subtotal: float | None = None
+    tax_rate: float | None = None
+    total_amount: float | None = None
 
 SCHEMA_MAP = {
     "cv": CVData,
