@@ -16,3 +16,6 @@ __pycache__/
 
 # Input documents
 input/
+
+# Generated output files
+output/
