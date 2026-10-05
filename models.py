@@ -23,3 +23,26 @@ class CVData(BaseModel):
     education: list[Education]
     experience: list[Experience]
     skills: list[str]
+
+
+class InvoiceItem(BaseModel):
+    description: str
+    quantity: float | None = None
+    unit_price: float | None = None
+    total_price: float | None = None
+
+
+class InvoiceData(BaseModel):
+    invoice_number: str | None = None
+    vendor: str | None = None
+    customer: str | None = None
+    invoice_date: str | None = None
+    due_date: str | None = None
+    currency: str | None = None
+    total_amount: float | None = None
+    items: list[InvoiceItem]
+
+SCHEMA_MAP = {
+    "cv": CVData,
+    "invoice": InvoiceData,
+}

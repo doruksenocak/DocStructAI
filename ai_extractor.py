@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 from openai import OpenAI
-
-from models import CVData
+from pydantic import BaseModel
 
 
 load_dotenv()
@@ -9,17 +8,18 @@ load_dotenv()
 client = OpenAI()
 
 
-def extract_cv_data(text):
+def extract_structured_data(text: str, schema: type[BaseModel]):
     response = client.responses.parse(
         model="gpt-6-luna",
         input=[
             {
                 "role": "system",
                 "content": """
-You extract structured information from CVs.
+Extract structured information from the provided document.
 
-Only extract information that is actually present in the CV.
+Only extract information that is actually present.
 Do not invent missing information.
+Follow the provided output schema exactly.
 """
             },
             {
@@ -27,7 +27,7 @@ Do not invent missing information.
                 "content": text
             }
         ],
-        text_format=CVData,
+        text_format=schema,
     )
 
     return response.output_parsed
