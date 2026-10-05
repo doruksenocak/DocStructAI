@@ -13,3 +13,6 @@ __pycache__/
 
 # Environment variables / API keys
 .env
+
+# Input documents
+input/
