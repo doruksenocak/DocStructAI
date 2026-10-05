@@ -13,6 +13,9 @@ client = OpenAI()
 class DocumentType(str, Enum):
     CV = "cv"
     INVOICE = "invoice"
+    RECEIPT = "receipt"
+    PURCHASE_ORDER = "purchase order"
+    CONTRACT = "contract"
     UNKNOWN = "unknown"
 
 
@@ -32,6 +35,9 @@ Classify the provided document.
 Possible document types:
 - cv
 - invoice
+- purchase order
+- receipt
+- contract
 - unknown
 
 Return unknown if the document does not clearly belong to one

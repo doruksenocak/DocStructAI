@@ -23,6 +23,7 @@ class CVData(BaseModel):
     education: list[Education]
     experience: list[Experience]
     skills: list[str]
+    interests: list[str]
 
 
 class InvoiceItem(BaseModel):
@@ -46,7 +47,94 @@ class InvoiceData(BaseModel):
     tax_rate: float | None = None
     total_amount: float | None = None
 
+
+
+class ReceiptItem(BaseModel):
+    description: str
+    quantity: float | None = None
+    unit_price: float | None = None
+    total_price: float | None = None
+
+
+class ReceiptData(BaseModel):
+    merchant: str | None = None
+    merchant_address: str | None = None
+
+    customer: str | None = None
+    customer_address: str | None = None
+
+    date: str | None = None
+    receipt_number: str | None = None
+    currency: str | None = None
+
+    items: list[ReceiptItem]
+
+    subtotal: float | None = None
+    tax: float | None = None
+    total: float | None = None
+
+    amount_paid: float | None = None
+    payment_method: str | None = None
+
+    refund_amount: float | None = None
+    refund_date: str | None = None
+
+
+
+class PurchaseOrderItem(BaseModel):
+    product_code: str | None = None
+    description: str
+    quantity: float | None = None
+    unit: str | None = None
+    unit_price: float | None = None
+    tax_rate: float | None = None
+    total_price: float | None = None
+
+
+class PurchaseOrderData(BaseModel):
+    po_number: str | None = None
+    po_date: str | None = None
+
+    supplier: str | None = None
+    supplier_address: str | None = None
+
+    buyer: str | None = None
+    billing_address: str | None = None
+    shipping_address: str | None = None
+
+    currency: str | None = None
+    payment_terms: str | None = None
+
+    items: list[PurchaseOrderItem]
+
+    subtotal: float | None = None
+    tax: float | None = None
+    total: float | None = None
+
+
+class ContractData(BaseModel):
+    contract_type: str | None = None
+
+    party_a: str | None = None
+    party_b: str | None = None
+
+    effective_date: str | None = None
+    end_date: str | None = None
+
+    subject: str | None = None
+    payment_terms: str | None = None
+    termination_terms: str | None = None
+
+    governing_law: str | None = None
+
+    key_obligations: list[str]
+
+    signed_by: list[str]
+
 SCHEMA_MAP = {
     "cv": CVData,
     "invoice": InvoiceData,
+    "receipt": ReceiptData,
+    "purchase order": PurchaseOrderData,
+    "contract": ContractData,
 }

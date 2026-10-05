@@ -1,7 +1,7 @@
 from document_processor import process_document
 
 
-file_path = "input/sample_invoice.pdf"
+file_path = "input/contract.pdf"
 
 result = process_document(file_path)
 
