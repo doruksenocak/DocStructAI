@@ -16,6 +16,7 @@ class DocumentType(str, Enum):
     RECEIPT = "receipt"
     PURCHASE_ORDER = "purchase order"
     CONTRACT = "contract"
+    BANK_STATEMENT = "bank statement"
     UNKNOWN = "unknown"
 
 
@@ -38,6 +39,7 @@ Possible document types:
 - purchase order
 - receipt
 - contract
+- bank statement
 - unknown
 
 Return unknown if the document does not clearly belong to one

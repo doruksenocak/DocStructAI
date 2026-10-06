@@ -1,8 +1,10 @@
 from document_processor import process_document
 
+result = process_document(
+    "input/dummy.pdf",
+    custom_fields=[
 
-file_path = "input/contract.pdf"
-
-result = process_document(file_path)
+    ]
+)
 
 print(result.model_dump_json(indent=2))

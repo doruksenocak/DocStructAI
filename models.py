@@ -131,10 +131,39 @@ class ContractData(BaseModel):
 
     signed_by: list[str]
 
+class BankTransaction(BaseModel):
+    date: str | None = None
+    description: str
+    withdrawal: float | None = None
+    deposit: float | None = None
+    balance: float | None = None
+
+
+class BankStatementData(BaseModel):
+    bank_name: str | None = None
+
+    account_holder: str | None = None
+    account_number: str | None = None
+    account_type: str | None = None
+
+    statement_start_date: str | None = None
+    statement_end_date: str | None = None
+    currency: str | None = None
+
+    opening_balance: float | None = None
+    total_money_in: float | None = None
+    total_money_out: float | None = None
+
+    transactions: list[BankTransaction]
+
+    closing_balance: float | None = None
+
+
 SCHEMA_MAP = {
     "cv": CVData,
     "invoice": InvoiceData,
     "receipt": ReceiptData,
     "purchase order": PurchaseOrderData,
     "contract": ContractData,
+    "bank statement": BankStatementData,
 }
