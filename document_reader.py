@@ -1,8 +1,23 @@
 import pymupdf
 import pytesseract
-from PIL import Image
+from PIL import Image, ImageEnhance
 from pathlib import Path
 
+def preprocess_image(image: Image.Image) -> Image.Image:
+
+    image = image.convert("L")
+
+
+    image = image.resize(
+        (image.width * 2, image.height * 2),
+        Image.Resampling.LANCZOS
+    )
+
+
+    enhancer = ImageEnhance.Contrast(image)
+    image = enhancer.enhance(2.0)
+
+    return image
 
 def extract_text_from_pdf(file_path):
     document = pymupdf.open(file_path)
@@ -35,6 +50,9 @@ def extract_text_from_pdf(file_path):
 
 def extract_text_from_image(file_path):
     image = Image.open(file_path)
+
+    image = preprocess_image(image)
+
     text = pytesseract.image_to_string(
         image,
         config="--psm 6"
