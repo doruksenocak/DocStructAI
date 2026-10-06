@@ -1,5 +1,5 @@
-from document_reader import extract_text
+from document_processor import process_document
 
-text = extract_text("input/bank_statement.png")
+result = process_document("input/bank_statement.png")
 
-print(text)
+print(result.model_dump_json(indent=2))
