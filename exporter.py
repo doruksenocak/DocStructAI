@@ -3,6 +3,7 @@ from pathlib import Path
 from pydantic import BaseModel
 import csv
 from openpyxl import Workbook
+from openpyxl.styles import Alignment
 
 def export_to_json(data: BaseModel, output_path: str):
     output_path = Path(output_path)
@@ -124,6 +125,31 @@ def export_to_csv(data: BaseModel, output_dir: str, name: str):
             writer.writerow(metadata)
 
 
+def format_sheet(sheet):
+    max_width = 50
+
+    for column_cells in sheet.columns:
+        longest_length = 0
+
+        for cell in column_cells:
+            cell.alignment = Alignment(
+                wrap_text=True,
+                vertical="top"
+            )
+
+            if cell.value is not None:
+                longest_length = max(
+                    longest_length,
+                    len(str(cell.value))
+                )
+
+        column_letter = column_cells[0].column_letter
+
+        sheet.column_dimensions[column_letter].width = min(
+            longest_length + 2,
+            max_width
+        )
+
 def export_to_excel(data: BaseModel, output_path: str):
     workbook = Workbook()
 
@@ -166,5 +192,8 @@ def export_to_excel(data: BaseModel, output_path: str):
 
             for item in value:
                 sheet.append([item])
+
+    for sheet in workbook.worksheets:
+        format_sheet(sheet)
 
     workbook.save(output_path)
