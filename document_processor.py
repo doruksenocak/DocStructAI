@@ -21,6 +21,6 @@ def process_document(file_path: str, custom_fields: list[str] | None = None):
             "Unknown document type and no custom fields were provided."
         )
 
-    result = extract_structured_data(text, schema)
+    data = extract_structured_data(text, schema)
 
-    return result
+    return document_type, data

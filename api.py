@@ -2,9 +2,10 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from pathlib import Path
 from uuid import uuid4
 import shutil
-
 from document_processor import process_document
 from validator import validate_document
+import json
+from database import SessionLocal, ProcessedDocument
 
 
 app = FastAPI(
@@ -40,8 +41,27 @@ async def process_uploaded_document(
         shutil.copyfileobj(file.file, buffer)
 
     try:
-        result = process_document(str(temp_path))
+        document_type, result = process_document(str(temp_path))
         validation = validate_document(result)
+
+        db = SessionLocal()
+
+        try:
+            document = ProcessedDocument(
+                filename=file.filename,
+                document_type=document_type.value,
+                data=json.dumps(result.model_dump())
+            )
+
+            db.add(document)
+            db.commit()
+
+        except Exception:
+            db.rollback()
+            raise
+
+        finally:
+            db.close()
 
     except ValueError as error:
         raise HTTPException(

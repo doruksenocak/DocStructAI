@@ -22,3 +22,7 @@ output/
 
 # Temporary API uploads
 temp/
+
+# Local database
+*.db
+*.db-journal
