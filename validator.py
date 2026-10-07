@@ -1063,3 +1063,28 @@ def validate_bank_statement(
         is_valid=not has_errors,
         issues=issues
     )
+
+def validate_document(data: BaseModel) -> ValidationResult:
+    if isinstance(data, CVData):
+        return validate_cv(data)
+
+    if isinstance(data, InvoiceData):
+        return validate_invoice(data)
+
+    if isinstance(data, ReceiptData):
+        return validate_receipt(data)
+
+    if isinstance(data, PurchaseOrderData):
+        return validate_purchase_order(data)
+
+    if isinstance(data, ContractData):
+        return validate_contract(data)
+
+    if isinstance(data, BankStatementData):
+        return validate_bank_statement(data)
+
+    # Custom/unknown schemas don't have document-specific validation
+    return ValidationResult(
+        is_valid=True,
+        issues=[]
+    )
