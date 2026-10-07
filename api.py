@@ -77,3 +77,81 @@ async def process_uploaded_document(
         "data": result.model_dump(),
         "validation": validation.model_dump()
     }
+
+
+@app.get("/documents")
+def get_documents():
+    db = SessionLocal()
+
+    try:
+        documents = db.query(ProcessedDocument).all()
+
+        return [
+            {
+                "id": document.id,
+                "filename": document.filename,
+                "document_type": document.document_type,
+                "data": json.loads(document.data)
+            }
+            for document in documents
+        ]
+
+    finally:
+        db.close()
+
+
+@app.get("/documents/{document_id}")
+def get_document(document_id: int):
+    db = SessionLocal()
+
+    try:
+        document = db.get(ProcessedDocument, document_id)
+
+        if document is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Document not found"
+            )
+
+        return {
+            "id": document.id,
+            "filename": document.filename,
+            "document_type": document.document_type,
+            "data": json.loads(document.data)
+        }
+
+    finally:
+        db.close()
+
+
+
+@app.delete("/documents/{document_id}")
+def delete_document(document_id: int):
+    db = SessionLocal()
+
+    try:
+        document = db.get(ProcessedDocument, document_id)
+
+        if document is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Document not found"
+            )
+
+        db.delete(document)
+        db.commit()
+
+        return {
+            "message": "Document deleted successfully",
+            "id": document_id
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
+
+    finally:
+        db.close()
