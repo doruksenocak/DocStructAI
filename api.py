@@ -6,6 +6,16 @@ from document_processor import process_document
 from validator import validate_document
 import json
 from database import SessionLocal, ProcessedDocument
+from typing import Annotated
+from pydantic import WithJsonSchema
+
+BinaryUploadFile = Annotated[
+    UploadFile,
+    WithJsonSchema({
+        "type": "string",
+        "format": "binary"
+    })
+]
 
 
 app = FastAPI(
@@ -155,3 +165,81 @@ def delete_document(document_id: int):
 
     finally:
         db.close()
+
+
+
+@app.post("/process-batch")
+async def process_batch(
+    files: list[BinaryUploadFile] = File(...)
+):
+    results = []
+
+    for file in files:
+        extension = Path(file.filename).suffix.lower()
+
+        if extension not in {".pdf", ".png", ".jpg", ".jpeg"}:
+            results.append({
+                "filename": file.filename,
+                "success": False,
+                "error": f"Unsupported file type: {extension}"
+            })
+            continue
+
+        temp_dir = Path("temp")
+        temp_dir.mkdir(exist_ok=True)
+
+        temp_path = temp_dir / f"{uuid4()}{extension}"
+
+        try:
+            with temp_path.open("wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+
+            document_type, result = process_document(str(temp_path))
+            validation = validate_document(result)
+
+            db = SessionLocal()
+
+            try:
+                document = ProcessedDocument(
+                    filename=file.filename,
+                    document_type=document_type.value,
+                    data=json.dumps(result.model_dump())
+                )
+
+                db.add(document)
+                db.commit()
+
+                document_id = document.id
+
+            except Exception:
+                db.rollback()
+                raise
+
+            finally:
+                db.close()
+
+            results.append({
+                "filename": file.filename,
+                "success": True,
+                "id": document_id,
+                "document_type": document_type.value,
+                "data": result.model_dump(),
+                "validation": validation.model_dump()
+            })
+
+        except Exception as error:
+            results.append({
+                "filename": file.filename,
+                "success": False,
+                "error": str(error)
+            })
+
+        finally:
+            temp_path.unlink(missing_ok=True)
+
+    return {
+        "total": len(files),
+        "successful": sum(1 for result in results if result["success"]),
+        "failed": sum(1 for result in results if not result["success"]),
+        "results": results
+    }
