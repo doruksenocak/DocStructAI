@@ -2,52 +2,134 @@
 
 ### AI-Powered Document Processing, Structured Data Extraction & Validation
 
-DocStructAI is a full-stack, AI-powered document processing platform that converts unstructured information from PDF and image files into organized, machine-readable data.
+DocStructAI is a full-stack document processing application that transforms unstructured information from PDFs and images into organized, machine-readable data.
 
-The application supports six common document categories: **CVs, invoices, receipts, purchase orders, contracts, and bank statements**.
-
-Users can upload documents through a React-based web interface, where DocStructAI automatically classifies the document, extracts its contents using PDF parsing or OCR, and leverages the OpenAI API to transform the information into structured data.
-
-**Beyond extraction, DocStructAI includes an automated validation layer designed to identify potential discrepancies, inconsistencies, and missing or questionable information in the extracted results.** This helps users identify information that may require manual review rather than relying blindly on AI-generated output.
-
-The application displays extracted information alongside validation feedback, allowing users to inspect the results before exporting them as **JSON, CSV, or XLSX (Microsoft Excel)** files.
-
-Processed documents are also stored in a SQLite database, enabling users to revisit previous extraction results.
+Users upload a document through a React web interface. DocStructAI extracts its text, automatically identifies the document category, uses the OpenAI API to generate document-specific structured data, and runs validation checks to flag potential discrepancies or inconsistencies. Users can review the results in the application, revisit previously processed documents, and export data as **JSON, CSV, or XLSX (Excel)**.
 
 ## Key Features
 
-- **Multi-format document processing:** Supports PDF, PNG, JPG, and JPEG files.
-- **Automatic document classification:** Recognizes CVs, invoices, receipts, purchase orders, contracts, and bank statements.
-- **PDF parsing and OCR:** Extracts textual information from digital documents and image-based files using PyMuPDF and Tesseract OCR.
-- **AI-powered data extraction:** Uses the OpenAI API to interpret document contents and generate structured, document-specific information.
-- **Automated extraction validation:** Checks extracted information for potential discrepancies, inconsistencies, missing fields, and questionable values, highlighting issues that may require manual review.
-- **Validation feedback:** Displays validation status and identified issues alongside the extracted data.
-- **Interactive React interface:** Provides a user-friendly environment for uploading documents, reviewing results, and managing processed files.
-- **Multiple export formats:** Exports structured information as JSON, CSV, or XLSX files compatible with Microsoft Excel.
-- **Persistent document history:** Stores processed results using SQLite and SQLAlchemy, allowing users to revisit or delete previous records.
-- **Dockerized full-stack application:** Uses Docker Compose to run the React/Nginx frontend and Python/FastAPI backend together.
+- **Multiple input formats:** PDF, PNG, JPG, and JPEG.
+- **Six document categories:** CVs, invoices, receipts, purchase orders, contracts, and bank statements.
+- **Automatic document classification:** Identifies the uploaded document's category.
+- **PDF text extraction and OCR:** Uses PyMuPDF for digital PDFs and Tesseract OCR for image-based content.
+- **AI-powered structured extraction:** Uses the OpenAI API to interpret extracted text and organize information into document-specific fields.
+- **Automated validation:** Checks extracted information for potential discrepancies, inconsistencies, or questionable values, and presents feedback for review. Validation helps flag possible errors but does not guarantee that every extracted field matches the source document.
+- **Interactive results:** Displays structured fields and, where applicable, tabular data such as bank transactions.
+- **Flexible exports:** Downloads processed data as JSON, CSV, or XLSX files.
+- **Document history:** Stores processed results in SQLite, with options to revisit or delete records.
+- **Dockerized application:** Runs the FastAPI backend and React frontend together using Docker Compose.
+
+## Application Screenshots
+
+### Supported File Formats & Document Types
+
+DocStructAI accepts PDFs and common image formats and supports six document categories.
+
+![Supported formats and document types](docstructai-web-app-images/01-supported-formats.png)
+
+### Upload, Export Options & History
+
+Select JSON, CSV, or XLSX, upload a document, and access previously processed documents.
+
+![Upload interface, export options and document history](docstructai-web-app-images/02-upload-and-export.png)
+
+### Document Processing
+
+The application provides a processing state while the uploaded document is being analyzed.
+
+![Document processing in progress](docstructai-web-app-images/03-document-processing.png)
+
+### Structured Extraction Results & Validation
+
+View the detected document type, extracted fields, transaction tables, and validation status.
+
+![Structured extraction results and validation status](docstructai-web-app-images/04-extraction-results.png)
 
 ## Technology Stack
 
 | Component | Technologies |
-|---|---|
+| --- | --- |
 | Frontend | React, JavaScript, Vite, CSS |
 | Backend | Python, FastAPI, Pydantic |
 | AI Processing | OpenAI API |
 | PDF & Image Processing | PyMuPDF, Tesseract OCR, Pillow |
-| Data Validation | Custom Python validation logic |
+| Validation | Custom Python validation logic |
 | Database | SQLite, SQLAlchemy |
-| Export Formats | JSON, CSV, XLSX |
-| Excel Generation Library | openpyxl |
+| Data Export | JSON, CSV, XLSX (generated using openpyxl) |
 | Containerization | Docker, Docker Compose, Nginx |
 
-## Document Processing Workflow
+## How It Works
 
-1. **Document Upload:** The user uploads a supported PDF or image file.
-2. **Text Extraction:** The application extracts textual content through PDF parsing or OCR.
-3. **Document Classification:** The system identifies the document category.
-4. **AI-Powered Extraction:** The OpenAI API transforms the unstructured content into document-specific structured fields.
-5. **Automated Validation:** DocStructAI evaluates the extracted information, identifies potential discrepancies or inconsistencies, and generates validation feedback.
-6. **Result Visualization:** The extracted fields and validation results are displayed in the React interface.
-7. **Data Export:** The user can download the structured information as JSON, CSV, or XLSX.
-8. **Document History:** Processed results are saved in SQLite for later retrieval.
+1. **Upload:** A user selects a supported PDF or image file.
+2. **Read:** The backend extracts document text using PDF parsing or OCR.
+3. **Classify:** DocStructAI identifies the document category.
+4. **Extract:** AI converts unstructured content into document-specific structured fields.
+5. **Validate:** Custom checks flag potential discrepancies or inconsistencies for review.
+6. **Display:** The React interface presents the extracted information and validation feedback.
+7. **Export:** The user downloads structured data as JSON, CSV, or XLSX.
+8. **Store:** Processed results are saved in SQLite for later access.
+
+## Getting Started
+
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (with Docker Compose)
+- An OpenAI API key
+
+### Run Locally
+
+1. Clone the repository and enter the project directory:
+
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/DocStructAI.git
+   cd DocStructAI
+   ```
+
+   Replace `YOUR_USERNAME` with the repository owner's GitHub username, and adjust the repository name if necessary.
+
+2. Create a `.env` file in the project root containing your API key:
+
+   ```env
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+   **Never commit `.env` or share your API key.** OpenAI API usage may incur charges.
+
+3. Create the local SQLite database file (required by the current Docker Compose bind mount):
+
+   ```bash
+   touch docstructai.db
+   ```
+
+   The application initializes its database tables when the backend starts. The database file remains on your machine and should not be committed to Git.
+
+4. Build and start the application:
+
+   ```bash
+   docker compose up --build
+   ```
+
+5. Open the application:
+
+   - **Web interface:** http://localhost:8080
+   - **FastAPI documentation:** http://localhost:8000/docs
+
+6. To stop the application, press `Ctrl+C` in the terminal running Docker Compose. To remove the stopped containers and Compose network:
+
+   ```bash
+   docker compose down
+   ```
+
+   The local database file is preserved.
+
+> **Note:** This is a local development/portfolio setup, not a publicly hosted service. The frontend expects the backend at `http://localhost:8000`.
+
+## Privacy & Security
+
+- Do not commit `.env`, API keys, or the local `docstructai.db` database.
+- Avoid publishing real personal or financial documents in screenshots or sample files. Use fictional or appropriately anonymized examples.
+- Uploaded document content is processed using the OpenAI API; review the applicable data-handling policies before using sensitive documents.
+
+## Project Status
+
+DocStructAI is a functional, locally runnable portfolio project. Public deployment is not required to run or demonstrate it.
