@@ -1,3 +1,4 @@
+
 services:
   backend:
     build: .
@@ -5,6 +6,8 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    volumes:
+      - ./docstructai.db:/app/docstructai.db
 
   frontend:
     build: ./frontend
