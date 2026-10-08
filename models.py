@@ -15,6 +15,11 @@ class Experience(BaseModel):
     end_date: str | None = None
     description: str | None = None
 
+class Project(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    tools: list[str] = []
+
 
 class CVData(BaseModel):
     name: str
@@ -22,7 +27,9 @@ class CVData(BaseModel):
     phone: str | None = None
     education: list[Education]
     experience: list[Experience]
+    projects: list[Experience]
     skills: list[str]
+    awards_and_certificates: list[str] = []
     interests: list[str]
 
 
