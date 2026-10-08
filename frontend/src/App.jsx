@@ -56,7 +56,9 @@ function App() {
   useEffect(() => {
 
     async function loadDocuments() {
+
       try {
+
         const response = await fetch(
           'http://localhost:8000/documents'
         )
@@ -72,7 +74,9 @@ function App() {
         setDocuments(data)
 
       } catch (error) {
+
         console.error(error)
+
       }
     }
 
@@ -90,26 +94,42 @@ function App() {
       return
     }
 
+
     if (!selectedFile) {
-      setError('Please select a document.')
+      setError(
+        'Please select a document.'
+      )
       return
     }
 
+
     if (!exportFormat) {
-      setError('Please select an export format.')
+      setError(
+        'Please select an export format.'
+      )
       return
     }
+
 
     setResult(null)
     setLoading(true)
     setError(null)
 
+
     try {
 
       const formData = new FormData()
 
-      formData.append('file', selectedFile)
-      formData.append('export_format', exportFormat)
+      formData.append(
+        'file',
+        selectedFile
+      )
+
+      formData.append(
+        'export_format',
+        exportFormat
+      )
+
 
       const response = await fetch(
         'http://localhost:8000/process',
@@ -119,15 +139,25 @@ function App() {
         }
       )
 
+
       if (!response.ok) {
         throw new Error(
           'Document processing failed'
         )
       }
 
+
       const data = await response.json()
 
       setResult(data)
+
+      setDocuments(
+        (currentDocuments) => [
+          ...currentDocuments,
+          data
+        ]
+      )
+
 
     } catch (error) {
 
@@ -141,16 +171,89 @@ function App() {
   }
 
 
+  async function handleOpenDocument(documentId) {
+
+    try {
+
+      const response = await fetch(
+        `http://localhost:8000/documents/${documentId}`
+      )
+
+
+      if (!response.ok) {
+        throw new Error(
+          'Could not load document'
+        )
+      }
+
+
+      const data = await response.json()
+
+      setResult(data)
+
+      setError(null)
+
+
+    } catch (error) {
+
+      setError(error.message)
+
+    }
+  }
+
+
   function handleDownload() {
 
     if (!result) {
       return
     }
 
+
     const url =
       `http://localhost:8000/documents/${result.id}/export?format=${exportFormat}`
 
     window.location.href = url
+  }
+
+
+  async function handleDelete(documentId) {
+
+    try {
+
+      const response = await fetch(
+        `http://localhost:8000/documents/${documentId}`,
+        {
+          method: 'DELETE'
+        }
+      )
+
+
+      if (!response.ok) {
+        throw new Error(
+          'Could not delete document'
+        )
+      }
+
+
+      setDocuments(
+        (currentDocuments) =>
+          currentDocuments.filter(
+            (document) =>
+              document.id !== documentId
+          )
+      )
+
+
+      if (result?.id === documentId) {
+        setResult(null)
+      }
+
+
+    } catch (error) {
+
+      console.error(error)
+
+    }
   }
 
 
@@ -317,6 +420,7 @@ function App() {
               exportFormat ===
               format.name.toLowerCase()
 
+
             return (
 
               <button
@@ -327,10 +431,13 @@ function App() {
                 }
                 key={format.name}
                 onClick={() => {
+
                   setExportFormat(
                     format.name.toLowerCase()
                   )
+
                   setError(null)
+
                 }}
               >
 
@@ -408,6 +515,7 @@ function App() {
             className="upload-icon"
             size={42}
           />
+
 
           <strong>
 
@@ -499,36 +607,44 @@ function App() {
             <div className="result-actions">
 
 
-              <div
-                className={
-                  result.validation.is_valid
-                    ? 'validation valid'
-                    : 'validation invalid'
-                }
-              >
+              {result.validation && (
 
-                <CircleCheck size={18} />
+                <div
+                  className={
+                    result.validation.is_valid
+                      ? 'validation valid'
+                      : 'validation invalid'
+                  }
+                >
 
-                {result.validation.is_valid
-                  ? 'Valid'
-                  : 'Invalid'
-                }
+                  <CircleCheck size={18} />
 
-              </div>
+                  {result.validation.is_valid
+                    ? 'Valid'
+                    : 'Invalid'
+                  }
+
+                </div>
+
+              )}
 
 
-              <button
-                className="download-button"
-                onClick={handleDownload}
-              >
+              {exportFormat && (
 
-                <Download size={19} />
+                <button
+                  className="download-button"
+                  onClick={handleDownload}
+                >
 
-                Download {
-                  exportFormat.toUpperCase()
-                }
+                  <Download size={19} />
 
-              </button>
+                  Download {
+                    exportFormat.toUpperCase()
+                  }
+
+                </button>
+
+              )}
 
 
             </div>
@@ -574,7 +690,10 @@ function App() {
               </span>
 
               <strong>
-                {exportFormat.toUpperCase()}
+                {exportFormat
+                  ? exportFormat.toUpperCase()
+                  : 'Select above'
+                }
               </strong>
 
             </div>
@@ -628,7 +747,7 @@ function App() {
           </h2>
 
           <p>
-            Your previously processed documents.
+            Click a document to view its extracted data.
           </p>
 
         </div>
@@ -641,9 +760,12 @@ function App() {
             <div
               className="history-item"
               key={document.id}
+              onClick={() =>
+                handleOpenDocument(document.id)
+              }
             >
 
-              <div>
+              <div className="history-info">
 
                 <strong>
                   {document.filename}
@@ -654,6 +776,20 @@ function App() {
                 </span>
 
               </div>
+
+
+              <button
+                className="delete-button"
+                onClick={(event) => {
+
+                  event.stopPropagation()
+
+                  handleDelete(document.id)
+
+                }}
+              >
+                Delete
+              </button>
 
             </div>
 
