@@ -27,7 +27,7 @@ class CVData(BaseModel):
     phone: str | None = None
     education: list[Education]
     experience: list[Experience]
-    projects: list[Experience]
+    projects: list[Project]
     skills: list[str]
     awards_and_certificates: list[str] = []
     interests: list[str]

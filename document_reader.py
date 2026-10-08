@@ -3,21 +3,21 @@ import pytesseract
 from PIL import Image, ImageEnhance, ImageChops
 from pathlib import Path
 
+
 def preprocess_image(image: Image.Image) -> Image.Image:
 
     image = image.convert("L")
-
 
     image = image.resize(
         (image.width * 2, image.height * 2),
         Image.Resampling.LANCZOS
     )
 
-
     enhancer = ImageEnhance.Contrast(image)
     image = enhancer.enhance(2.0)
 
     return image
+
 
 def crop_to_content(image: Image.Image) -> Image.Image:
     grayscale = image.convert("L")
@@ -35,6 +35,7 @@ def crop_to_content(image: Image.Image) -> Image.Image:
         return image
 
     return image.crop(bbox)
+
 
 def extract_text_from_pdf(file_path):
     document = pymupdf.open(file_path)
@@ -80,6 +81,7 @@ def extract_text_from_image(file_path):
     )
 
     return text
+
 
 def extract_text(file_path):
     extension = Path(file_path).suffix.lower()

@@ -150,6 +150,14 @@ def format_sheet(sheet):
             max_width
         )
 
+
+def excel_safe(value):
+
+    if isinstance(value, (list, dict)):
+        return json.dumps(value, ensure_ascii=False)
+
+    return value
+
 def export_to_excel(data: BaseModel, output_path: str):
     workbook = Workbook()
 
@@ -162,7 +170,10 @@ def export_to_excel(data: BaseModel, output_path: str):
 
         # Normal value → Metadata sheet
         if not isinstance(value, list):
-            metadata_sheet.append([field_name, value])
+            metadata_sheet.append([
+                field_name,
+                excel_safe(value)
+            ])
             continue
 
         # Empty list → nothing to export
@@ -182,7 +193,7 @@ def export_to_excel(data: BaseModel, output_path: str):
 
             for row in value:
                 sheet.append([
-                    row[header]
+                    excel_safe(row.get(header))
                     for header in headers
                 ])
 
