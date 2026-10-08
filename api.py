@@ -8,6 +8,7 @@ import json
 from database import SessionLocal, ProcessedDocument
 from typing import Annotated
 from pydantic import WithJsonSchema
+from fastapi.middleware.cors import CORSMiddleware
 
 BinaryUploadFile = Annotated[
     UploadFile,
@@ -18,10 +19,14 @@ BinaryUploadFile = Annotated[
 ]
 
 
-app = FastAPI(
-    title="DocStructAI API"
+app = FastAPI(title="DocStructAI API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
 
 @app.get("/")
 def home():
