@@ -55,7 +55,7 @@ View the detected document type, extracted fields, transaction tables, and valid
 | PDF & Image Processing | PyMuPDF, Tesseract OCR, Pillow |
 | Validation | Custom Python validation logic |
 | Database | SQLite, SQLAlchemy |
-| Data Export | JSON, CSV, XLSX (generated using openpyxl) |
+| Data Export | JSON, CSV, XLSX (using the Python `openpyxl` library for Excel files) |
 | Containerization | Docker, Docker Compose, Nginx |
 
 ## How It Works
