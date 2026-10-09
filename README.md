@@ -81,11 +81,9 @@ View the detected document type, extracted fields, transaction tables, and valid
 1. Clone the repository and enter the project directory:
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/DocStructAI.git
+   git clone https://github.com/doruksenocak/DocStructAI.git
    cd DocStructAI
    ```
-
-   Replace `YOUR_USERNAME` with the repository owner's GitHub username, and adjust the repository name if necessary.
 
 2. Create a `.env` file in the project root containing your API key:
 
