@@ -5,6 +5,7 @@ import csv
 from openpyxl import Workbook
 from openpyxl.styles import Alignment
 
+
 def export_to_json(data: BaseModel, output_path: str):
     output_path = Path(output_path)
 
