@@ -25,6 +25,9 @@ class ClassificationResult(BaseModel):
 
 
 def classify_document(text: str) -> DocumentType:
+    if not text.strip():
+        raise ValueError("Cannot classify a document with no readable text.")
+
     response = client.responses.parse(
         model="gpt-6-luna",
         input=[
